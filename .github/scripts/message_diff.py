@@ -142,12 +142,12 @@ def compare_files(base_file, head_file):
     return added, removed, modified, stats
 
 
-def truncate(text, max_len=80):
+def truncate(text, max_len=None):
     """Truncate text for display, preserving readability."""
     if not text:
         return ''
     text = str(text).strip()
-    if len(text) > max_len:
+    if max_len and len(text) > max_len:
         return text[:max_len] + '...'
     return text
 
@@ -188,7 +188,7 @@ def generate_markdown_report(added, removed, modified, stats):
         lines.append("|---|---|---|---|")
         for item in added[:MAX_ITEMS]:
             escaped_text = escape_markdown(truncate(item['text']))
-            escaped_key = escape_markdown(truncate(item['key'], 35))
+            escaped_key = escape_markdown(truncate(item['key']))
             lines.append(f"| {item['id']} | `{escaped_key}` | {escaped_text} | {item['user']} |")
         if len(added) > MAX_ITEMS:
             lines.append(f"| ... | *{len(added) - MAX_ITEMS} more items* | ... | ... |")

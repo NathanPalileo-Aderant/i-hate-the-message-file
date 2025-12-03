@@ -47,17 +47,17 @@ jobs:
             echo 'EOF'
           } >> $GITHUB_OUTPUT
       
-      - name: Generate AI Summary
-        id: ai-summary
+      - name: Generate Message Suggestions
+        id: suggestions
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
-          python .github/scripts/ai_summarize.py diff_output.md > ai_summary.md
+          python .github/scripts/message_suggestions.py diff_output.md > suggestions.md
           
-          # Store AI summary
+          # Store suggestions
           {
-            echo 'AI_SUMMARY<<EOF'
-            cat ai_summary.md
+            echo 'SUGGESTIONS<<EOF'
+            cat suggestions.md
             echo 'EOF'
           } >> $GITHUB_OUTPUT
       
@@ -68,8 +68,8 @@ jobs:
           body: |
             ## 📊 CMS Message File Changes Detected
             
-            ### 🤖 AI Summary
-            ${{ steps.ai-summary.outputs.AI_SUMMARY }}
+            ### 💡 Message Style Suggestions
+            ${{ steps.suggestions.outputs.SUGGESTIONS }}
             
             ---
             

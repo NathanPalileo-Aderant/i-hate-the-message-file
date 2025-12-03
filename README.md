@@ -101,7 +101,7 @@ MAX_ITEMS = 50  # Change to show more/fewer items per category
 Edit `.github/scripts/ai_summarize.py`:
 
 ```python
-model="claude-3-5-sonnet-20241022"  # Change to a different Claude model
+model="claude-haiku-4-5"  # Change to a different Claude model
 ```
 
 ## Troubleshooting

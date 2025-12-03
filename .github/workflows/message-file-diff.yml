@@ -3,7 +3,7 @@ name: Message File Diff Checker
 on:
   pull_request:
     paths:
-      - 'i-hate-the-message-file/dbo.CMS_MESSAGE.EN06 (11).txt'
+      - 'dbo.CMS_MESSAGE.EN06 (11).txt'
 
 jobs:
   diff-check:
@@ -30,10 +30,10 @@ jobs:
       - name: Get base branch file
         run: |
           # Fetch the base branch version of the file
-          git show origin/${{ github.base_ref }}:"i-hate-the-message-file/dbo.CMS_MESSAGE.EN06 (11).txt" > base_file.txt 2>/dev/null || echo "" > base_file.txt
+          git show origin/${{ github.base_ref }}:"dbo.CMS_MESSAGE.EN06 (11).txt" > base_file.txt 2>/dev/null || echo "" > base_file.txt
           
           # Copy the PR version
-          cp "i-hate-the-message-file/dbo.CMS_MESSAGE.EN06 (11).txt" head_file.txt
+          cp "dbo.CMS_MESSAGE.EN06 (11).txt" head_file.txt
       
       - name: Run diff analysis
         id: diff

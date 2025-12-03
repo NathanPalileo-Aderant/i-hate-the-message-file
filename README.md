@@ -1,6 +1,6 @@
 # CMS Message File Diff Checker
 
-Automatically compares large CMS_MESSAGE files in Pull Requests and posts a detailed diff report with AI-powered summaries as a PR comment.
+Automatically compares large CMS_MESSAGE files in Pull Requests and posts a detailed diff report with AI-powered style suggestions as a PR comment.
 
 ## Problem
 
@@ -12,14 +12,14 @@ A GitHub Action that:
 1. **Detects changes** to the message file in PRs
 2. **Compares versions** between base branch and PR branch
 3. **Categorizes changes** into Added, Removed, and Modified messages
-4. **Generates an AI summary** using Claude to explain what changed in plain English
-5. **Posts a PR comment** with both the summary and detailed diff tables
+4. **Generates AI-powered style suggestions** using Claude to check new messages against formatting guidelines
+5. **Posts a PR comment** with style suggestions and detailed diff tables
 
 ## Setup
 
 ### 1. Add the Anthropic API Key Secret
 
-The AI summary feature requires an Anthropic API key:
+The AI style suggestions feature requires an Anthropic API key:
 
 1. Go to your repository on GitHub
 2. Navigate to **Settings** → **Secrets and variables** → **Actions**
@@ -28,7 +28,7 @@ The AI summary feature requires an Anthropic API key:
 5. Value: Your Anthropic API key (get one at https://console.anthropic.com/)
 6. Click **Add secret**
 
-> **Note:** The workflow will still function without the API key, but will generate a basic summary instead of an AI-powered one.
+> **Note:** The workflow will still function without the API key, but will only perform basic checks instead of full AI-powered analysis.
 
 ### 2. File Structure
 
@@ -40,7 +40,7 @@ Ensure these files are in your repository:
     message-file-diff.yml     # GitHub Actions workflow
   scripts/
     message_diff.py           # Diff parser script
-    ai_summarize.py           # AI summarizer script
+    message_suggestions.py    # AI message style checker script
 ```
 
 ### 3. Trigger the Workflow
@@ -52,8 +52,11 @@ The workflow automatically runs when a PR modifies:
 
 When changes are detected, the workflow posts a comment like this:
 
-### 🤖 AI Summary
-> This PR adds 15 new messages related to the Disbursements feature, including tooltips and error messages. Two existing messages were modified to fix typos. The changes appear focused on the Expert Disbursements module...
+### 💡 Message Style Suggestions
+> ✅ No issues found. All new messages follow the style guidelines.
+
+Or if issues are detected:
+> 1. **ID 555393 (DELETEPOSTEDERROR)**: Uses "Please refresh" - Content Text should not use "please". Suggested fix: "Refresh to view the current status."
 
 ### 📋 Detailed Changes
 
@@ -98,7 +101,7 @@ MAX_ITEMS = 50  # Change to show more/fewer items per category
 
 ### Change the AI model
 
-Edit `.github/scripts/ai_summarize.py`:
+Edit `.github/scripts/message_suggestions.py`:
 
 ```python
 model="claude-haiku-4-5"  # Change to a different Claude model
@@ -106,7 +109,7 @@ model="claude-haiku-4-5"  # Change to a different Claude model
 
 ## Troubleshooting
 
-### "AI Summary unavailable: ANTHROPIC_API_KEY secret not configured"
+### "Message suggestions unavailable: ANTHROPIC_API_KEY secret not configured"
 
 Add the `ANTHROPIC_API_KEY` secret as described in the Setup section.
 
@@ -120,7 +123,7 @@ Add the `ANTHROPIC_API_KEY` secret as described in the Setup section.
 
 The scripts are optimized for large files, but if you have extremely large diffs:
 - Reduce `MAX_ITEMS` in `message_diff.py`
-- The AI summarizer only processes the first 100 items per category
+- The message suggestions script only processes the first 20 added messages
 
 ## License
 

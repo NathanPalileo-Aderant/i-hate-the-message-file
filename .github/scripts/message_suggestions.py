@@ -8,6 +8,7 @@ import sys
 import os
 import re
 import json
+import base64
 
 try:
     import anthropic
@@ -93,13 +94,15 @@ def build_suggestions_prompt(added_messages):
     
     messages_text = "\n".join(message_list)
     
-    prompt = f"""You are a technical writer reviewing CMS (Content Management System) messages for a legal/financial software application. Analyze the following newly added messages and identify any style guideline violations.
+    prompt = f"""You are a technical writer reviewing CMS (Content Management System) messages for a legal/financial software application. The attached image shows an example of how these messages appear in dialog boxes to end users. Use this visual context when reviewing messages.
+
+Analyze the following newly added messages and identify any style guideline violations.
 
 ## Style Guidelines
 
-### Main Instruction Text (type: main_instruction)
+### Main Instruction Text
 
-- Brief description of message, warning, or error from the user's perspective
+Main Instruction Text is a brief message, warning or error from the user's perspective.
 
 - The user should immediately understand the impact of their actions when reading this
 
@@ -111,11 +114,17 @@ def build_suggestions_prompt(added_messages):
 
 - Example: "Invalid search employee uno"
 
-### Content Text (type: content_text)
+- Example: "Not Authorized"
 
-- More elaborate detail about the message, warning, or error
+### Content Text
 
-- Kept brief and specific, these offer appropriate solutions the end user can perform
+Content Text expands on the message in the Main Instruction Text to provide additional context and instruction.
+
+- May include elaboration on the message, warning, or error from the Main Instruction Text
+
+- Offers appropriate solutions the end user can perform
+
+- Uses short sentences with minimal commas.
 
 - Use sentence capitalization
 
@@ -132,6 +141,8 @@ def build_suggestions_prompt(added_messages):
 - Example: "You must select a valid matter before proceeding."
 
 - Example: "The refund amount cannot exceed the advance balance."
+
+- Example: "You do not have the required permissions to run Expert Accounts Payable. Please contact your system administrator to gain access to this application."
 
 ## Messages to Review
 
@@ -182,11 +193,32 @@ def generate_suggestions(diff_data):
     try:
         client = anthropic.Anthropic(api_key=api_key)
         
+        # Load the example dialog image
+        image_path = os.path.join(os.path.dirname(__file__), '..', 'assets', 'image.png')
+        image_content = []
+        
+        if os.path.exists(image_path):
+            with open(image_path, 'rb') as f:
+                image_data = base64.standard_b64encode(f.read()).decode('utf-8')
+            image_content = [
+                {
+                    "type": "image",
+                    "source": {
+                        "type": "base64",
+                        "media_type": "image/png",
+                        "data": image_data
+                    }
+                }
+            ]
+        
+        # Build multimodal message with image + text
+        message_content = image_content + [{"type": "text", "text": prompt}]
+        
         message = client.messages.create(
             model="claude-haiku-4-5",
             max_tokens=1024,
             messages=[
-                {"role": "user", "content": prompt}
+                {"role": "user", "content": message_content}
             ]
         )
         

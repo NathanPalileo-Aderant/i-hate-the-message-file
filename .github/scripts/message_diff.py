@@ -171,9 +171,9 @@ def generate_markdown_report(added, removed, modified, stats):
     lines.append(f"|--------|-------|")
     lines.append(f"| Base file messages | {stats['base_total']:,} |")
     lines.append(f"| New file messages | {stats['head_total']:,} |")
-    lines.append(f"| ✅ Added | **{stats['added']}** |")
-    lines.append(f"| ❌ Removed | **{stats['removed']}** |")
-    lines.append(f"| ✏️ Modified | **{stats['modified']}** |")
+    lines.append(f"| Added | **{stats['added']}** |")
+    lines.append(f"| Removed | **{stats['removed']}** |")
+    lines.append(f"| Modified | **{stats['modified']}** |")
     lines.append("")
     
     # Limit output to prevent massive PR comments
@@ -182,7 +182,7 @@ def generate_markdown_report(added, removed, modified, stats):
     # Added messages
     if added:
         lines.append("<details>")
-        lines.append(f"<summary>✅ Added Messages ({len(added)})</summary>")
+        lines.append(f"<summary>Added Messages ({len(added)})</summary>")
         lines.append("")
         lines.append("| ID | Key | Text | User |")
         lines.append("|---|---|---|---|")
@@ -199,7 +199,7 @@ def generate_markdown_report(added, removed, modified, stats):
     # Removed messages
     if removed:
         lines.append("<details>")
-        lines.append(f"<summary>❌ Removed Messages ({len(removed)})</summary>")
+        lines.append(f"<summary>Removed Messages ({len(removed)})</summary>")
         lines.append("")
         lines.append("| ID | Key | Text | User |")
         lines.append("|---|---|---|---|")
@@ -216,7 +216,7 @@ def generate_markdown_report(added, removed, modified, stats):
     # Modified messages
     if modified:
         lines.append("<details>")
-        lines.append(f"<summary>✏️ Modified Messages ({len(modified)})</summary>")
+        lines.append(f"<summary>Modified Messages ({len(modified)})</summary>")
         lines.append("")
         for item in modified[:MAX_ITEMS]:
             escaped_key = escape_markdown(truncate(item['key'], 50))

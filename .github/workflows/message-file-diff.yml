@@ -66,14 +66,14 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            ## 📊 CMS Message File Changes Detected
+            ## CMS Message File Changes Detected
             
-            ### 💡 Message Style Suggestions
+            ### Message Style Suggestions
             ${{ steps.suggestions.outputs.SUGGESTIONS }}
             
             ---
             
-            ### 📋 Detailed Changes
+            ### Detailed Changes
             ${{ steps.diff.outputs.DIFF_OUTPUT }}
             
             ---

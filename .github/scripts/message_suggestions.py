@@ -13,7 +13,7 @@ import base64
 try:
     import anthropic
 except ImportError:
-    print("⚠️ Anthropic library not installed. Run: pip install anthropic")
+    print("Anthropic library not installed. Run: pip install anthropic")
     print("Skipping message suggestions.")
     sys.exit(0)
 
@@ -162,7 +162,7 @@ Review each message against its type's guidelines. Provide 0 to 3 suggestions fo
 
 If all messages follow the guidelines correctly, respond with exactly:
 
-✅ No issues found. All new messages follow the style guidelines.
+No issues found. All new messages follow the style guidelines.
 
 If there are issues, respond with a numbered list (max 3 items) in this format:
 
@@ -178,17 +178,17 @@ def generate_suggestions(diff_data):
     api_key = os.environ.get('ANTHROPIC_API_KEY')
     
     if not api_key:
-        return "⚠️ **Message suggestions unavailable**: `ANTHROPIC_API_KEY` secret not configured.\n\nTo enable AI-powered suggestions, add your Anthropic API key as a repository secret."
+        return "**Message suggestions unavailable**: `ANTHROPIC_API_KEY` secret not configured.\n\nTo enable AI-powered suggestions, add your Anthropic API key as a repository secret."
     
     added = diff_data.get('added', [])
     
     if not added:
-        return "✅ No new messages to review."
+        return "No new messages to review."
     
     prompt = build_suggestions_prompt(added)
     
     if not prompt:
-        return "✅ No messages requiring review (only Dialog Titles were added)."
+        return "No messages requiring review (only Dialog Titles were added)."
     
     try:
         client = anthropic.Anthropic(api_key=api_key)
@@ -225,16 +225,16 @@ def generate_suggestions(diff_data):
         if message.content and len(message.content) > 0:
             return message.content[0].text
         else:
-            return "⚠️ AI generated an empty response."
+            return "AI generated an empty response."
             
     except anthropic.APIConnectionError:
-        return "⚠️ **Message suggestions unavailable**: Could not connect to Anthropic API."
+        return "**Message suggestions unavailable**: Could not connect to Anthropic API."
     except anthropic.RateLimitError:
-        return "⚠️ **Message suggestions unavailable**: API rate limit exceeded. Please try again later."
+        return "**Message suggestions unavailable**: API rate limit exceeded. Please try again later."
     except anthropic.APIStatusError as e:
-        return f"⚠️ **Message suggestions unavailable**: API error ({e.status_code})"
+        return f"**Message suggestions unavailable**: API error ({e.status_code})"
     except Exception as e:
-        return f"⚠️ **Message suggestions unavailable**: {str(e)}"
+        return f"**Message suggestions unavailable**: {str(e)}"
 
 
 def generate_fallback_suggestions(diff_data):
@@ -242,7 +242,7 @@ def generate_fallback_suggestions(diff_data):
     added = diff_data.get('added', [])
     
     if not added:
-        return "✅ No new messages to review."
+        return "No new messages to review."
     
     issues = []
     
@@ -268,7 +268,7 @@ def generate_fallback_suggestions(diff_data):
             break
     
     if not issues:
-        return "✅ No obvious issues found. (Full AI analysis unavailable)"
+        return "No obvious issues found. (Full AI analysis unavailable)"
     
     return "\n".join([f"{i+1}. {issue}" for i, issue in enumerate(issues)])
 
@@ -297,7 +297,7 @@ def main():
     # Check if there are any added messages
     stats = diff_data.get('stats', {})
     if stats.get('added', 0) == 0:
-        print("✅ No new messages added in this PR.")
+        print("No new messages added in this PR.")
         sys.exit(0)
     
     # Generate suggestions

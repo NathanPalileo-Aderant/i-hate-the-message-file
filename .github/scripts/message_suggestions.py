@@ -98,21 +98,39 @@ def build_suggestions_prompt(added_messages):
 ## Style Guidelines
 
 ### Main Instruction Text (type: main_instruction)
-- Brief description of message/warning/error from the user's perspective
-- User should understand the impact of their actions by reading this
-- NO ending punctuation EXCEPT for "?" if it's a question
+
+- Brief description of message, warning, or error from the user's perspective
+
+- The user should immediately understand the impact of their actions when reading this
+
+- NO ending punctuation EXCEPT for "?" if it is a question
+
 - Example: "Are you sure you want to continue?"
+
 - Example: "Select a matter to proceed"
 
-### Content Text (type: content_text)  
-- More elaborate detail about the message/warning/error
-- Keep brief and specific, offer appropriate solutions the end user can perform
+- Example: "Invalid search employee uno"
+
+### Content Text (type: content_text)
+
+- More elaborate detail about the message, warning, or error
+
+- Kept brief and specific, these offer appropriate solutions the end user can perform
+
 - Use sentence capitalization
+
 - MUST have ending punctuation (period, exclamation, or question mark)
-- MUST refer to the user as "the user" instead of "you"
-- Do NOT use "please" in instructions
-- Use short, complete sentences
-- Example: "The user must select a valid matter before proceeding."
+
+- MUST refer to the user as "you" instead of "the user"
+
+- Content Text does NOT use "please" EXCEPT for when the user is being asked to contact the system administrator
+
+- Content Text uses short, complete sentences when possible
+
+- Example: "The cash receipt status is invalid. The cash receipt cannot be inserted."
+
+- Example: "You must select a valid matter before proceeding."
+
 - Example: "The refund amount cannot exceed the advance balance."
 
 ## Messages to Review
@@ -121,17 +139,22 @@ def build_suggestions_prompt(added_messages):
 
 ## Instructions
 
-Review each message against its type's guidelines. Provide 0 to 3 suggestions for improvements. Focus on the most important issues:
+Review each message against its type's guidelines. Provide 0 to 3 suggestions for improvements. Not all messages require improvement. Focus on the most important issues:
 
-1. Content Text using "you" instead of "the user"
-2. Content Text using "please"
+1. Content Text using "the user" instead of "you"
+
+2. Content Text using "please" without a request to contact the administrator
+
 3. Main Instruction Text with incorrect ending punctuation
+
 4. Content Text missing ending punctuation
 
 If all messages follow the guidelines correctly, respond with exactly:
+
 ✅ No issues found. All new messages follow the style guidelines.
 
 If there are issues, respond with a numbered list (max 3 items) in this format:
+
 1. **ID [id] ([KEY])**: [Brief description of the issue]. Suggested fix: "[corrected text]"
 
 Keep suggestions concise and actionable. Do not use any other formatting."""
@@ -202,10 +225,12 @@ def generate_fallback_suggestions(diff_data):
         
         # Check for common issues
         if msg_type == 'content_text':
-            if 'please' in text.lower():
-                issues.append(f"**ID {msg_id} ({key})**: Contains \"please\" - Content Text should not use \"please\".")
-            if ' you ' in text.lower() or text.lower().startswith('you ') or ' your ' in text.lower():
-                issues.append(f"**ID {msg_id} ({key})**: Uses \"you/your\" - Content Text should use \"the user\" instead.")
+            # Check for "please" without "administrator" or "admin"
+            if 'please' in text.lower() and 'admin' not in text.lower():
+                issues.append(f"**ID {msg_id} ({key})**: Contains \"please\" without administrator contact - Content Text should not use \"please\" except when asking to contact admin.")
+            # Check for "the user" instead of "you"
+            if 'the user' in text.lower():
+                issues.append(f"**ID {msg_id} ({key})**: Uses \"the user\" - Content Text should use \"you\" instead.")
         
         if len(issues) >= 3:
             break
